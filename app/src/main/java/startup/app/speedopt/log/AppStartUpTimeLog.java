@@ -1,8 +1,8 @@
 package startup.app.speedopt.log;
 
-        import android.util.Log;
+import android.util.Log;
 
-        import startup.app.speedopt.BuildConfig;
+import startup.app.speedopt.BuildConfig;
 
 /**
  * Created by popfisher on 2016/11/15.
@@ -27,6 +27,7 @@ public class AppStartUpTimeLog {
 
     /**
      * 记录开始计时的位置
+     *
      * @param markStr
      */
     public static void markStartTime(String markStr) {
@@ -43,6 +44,7 @@ public class AppStartUpTimeLog {
 
     /**
      * 输出与上一次log的时间差
+     *
      * @param markStr
      */
     public static void logTimeDiff(String markStr) {
@@ -57,6 +59,7 @@ public class AppStartUpTimeLog {
 
     /**
      * 输出当前位置到开始计时点的总时间差
+     *
      * @param markStr
      */
     public static void logCurTotalTime(String markStr) {

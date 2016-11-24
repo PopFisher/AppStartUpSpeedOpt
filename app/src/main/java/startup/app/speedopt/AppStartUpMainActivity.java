@@ -2,14 +2,18 @@ package startup.app.speedopt;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 
 import startup.app.speedopt.log.AppStartUpTimeLog;
 import startup.app.speedopt.utils.BlockingUtil;
 
-public class AppStartUpMainActivity extends Activity {
+public class AppStartUpMainActivity extends Activity implements MainRootView.IFirstDrawListener {
 
     /** 是否是第一次获取焦点 */
     private boolean mIsFirstFocus = true;
+    private MainRootView mMainRootView;
+
+    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +31,16 @@ public class AppStartUpMainActivity extends Activity {
         setContentView(R.layout.activity_app_start_up_main);
         AppStartUpTimeLog.logTimeDiff("Activity setContent end");
 
+        initView();
         BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
 
         AppStartUpTimeLog.logTimeDiff("Activity onCreate end");
         AppStartUpTimeLog.logCurTotalTime("Activity onCreate end");
+    }
+
+    private void initView() {
+        mMainRootView = (MainRootView) findViewById(R.id.activity_app_start_up_main);
+        mMainRootView.setFirstDrawListener(this);
     }
 
     @Override
@@ -50,12 +60,25 @@ public class AppStartUpMainActivity extends Activity {
         if (hasFocus && mIsFirstFocus) {
             mIsFirstFocus = false;
             AppStartUpTimeLog.logTimeDiff("Activity onWindowFocusChanged true start");
-
-            BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
-
-            AppStartUpTimeLog.logTimeDiff("Activity onWindowFocusChanged true end");
-            AppStartUpTimeLog.logCurTotalTime("Activity onWindowFocusChanged true end");
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    BlockingUtil.simulateBlocking(10);  // 模拟阻塞100毫秒
+                    AppStartUpTimeLog.logTimeDiff("Activity onWindowFocusChanged true end");
+                    AppStartUpTimeLog.logCurTotalTime("Activity onWindowFocusChanged true end");
+                }
+            });
         }
     }
 
+    @Override
+    public void onFirstDrawFinish() {
+        AppStartUpTimeLog.logTimeDiff("Activity onFirstDrawFinish");
+        AppStartUpTimeLog.logCurTotalTime("Activity onFirstDrawFinish");
+        onLazyInit();
+    }
+
+    private void onLazyInit() {
+
+    }
 }
