@@ -43,6 +43,34 @@ public class AppStartUpMainActivity extends Activity implements MainRootView.IFi
     private void initView() {
         mMainRootView = (MainRootView) findViewById(R.id.activity_app_start_up_main);
         mMainRootView.setFirstDrawListener(this);
+        FirstDrawLayoutRoot firstDrawLayoutRootOne = (FirstDrawLayoutRoot) findViewById(R.id.root_layout_one);
+        firstDrawLayoutRootOne.setFirstDrawListener(new FirstDrawLayoutRoot.IFirstDrawListener() {
+            @Override
+            public void onFirstDrawFinish() {
+                AppLog.log("Activity FirstDrawLayoutRootOne onFirstDrawFinish");
+            }
+        });
+        FirstDrawLayoutRoot firstDrawLayoutRootOneChild = (FirstDrawLayoutRoot) findViewById(R.id.root_layout_one_child);
+        firstDrawLayoutRootOneChild.setFirstDrawListener(new FirstDrawLayoutRoot.IFirstDrawListener() {
+            @Override
+            public void onFirstDrawFinish() {
+                AppLog.log("Activity FirstDrawLayoutRootOne Child onFirstDrawFinish");
+            }
+        });
+        FirstDrawLayoutRoot firstDrawLayoutRootTwo = (FirstDrawLayoutRoot) findViewById(R.id.root_layout_two);
+        firstDrawLayoutRootTwo.setFirstDrawListener(new FirstDrawLayoutRoot.IFirstDrawListener() {
+            @Override
+            public void onFirstDrawFinish() {
+                AppLog.log("Activity FirstDrawLayoutRootTwo onFirstDrawFinish");
+            }
+        });
+        FirstDrawLayoutRoot firstDrawLayoutRootTwoChild = (FirstDrawLayoutRoot) findViewById(R.id.root_layout_two_child);
+        firstDrawLayoutRootTwoChild.setFirstDrawListener(new FirstDrawLayoutRoot.IFirstDrawListener() {
+            @Override
+            public void onFirstDrawFinish() {
+                AppLog.log("Activity FirstDrawLayoutRootTwo Child onFirstDrawFinish");
+            }
+        });
     }
 
     @Override
@@ -89,7 +117,7 @@ public class AppStartUpMainActivity extends Activity implements MainRootView.IFi
 
     @Override
     public void onFirstDrawFinish() {
-        AppLog.log("Activity onFirstDrawFinish");
+        AppLog.log("Activity MainRootView onFirstDrawFinish");
         AppStartUpTimeLog.logTimeDiff("Activity onFirstDrawFinish");
         AppStartUpTimeLog.logCurTotalTime("Activity onFirstDrawFinish");
         onLazyInit();
