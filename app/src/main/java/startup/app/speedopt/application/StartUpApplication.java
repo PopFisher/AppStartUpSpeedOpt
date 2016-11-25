@@ -1,6 +1,7 @@
 package startup.app.speedopt.application;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.SystemClock;
 
@@ -20,8 +21,16 @@ public class StartUpApplication extends Application {
         super.onCreate();
         AppStartUpTimeLog.isColdStart = true;   // 设置为冷启动标志
         AppLog.log("StartUpApplication onCreate");
-        AppStartUpTimeLog.markStartTime("Application onCreate");
-        BlockingUtil.simulateBlocking(100); // 模拟阻塞100毫秒
+        AppStartUpTimeLog.logTimeDiff("Application onCreate");
+        BlockingUtil.simulateBlocking(500); // 模拟阻塞100毫秒
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        AppLog.log("StartUpApplication attachBaseContext");
+        AppStartUpTimeLog.markStartTime("Application attachBaseContext");
+        BlockingUtil.simulateBlocking(200); // 模拟阻塞100毫秒
     }
 
     @Override

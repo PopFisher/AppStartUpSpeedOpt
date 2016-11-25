@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 
+import startup.app.speedopt.log.AppLog;
 import startup.app.speedopt.log.AppStartUpTimeLog;
 import startup.app.speedopt.utils.BlockingUtil;
 
@@ -18,6 +19,7 @@ public class AppStartUpMainActivity extends Activity implements MainRootView.IFi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppLog.log("Activity onCreate");
         if (AppStartUpTimeLog.isColdStart) {
             AppStartUpTimeLog.isColdStart = false;
         } else {
@@ -46,6 +48,7 @@ public class AppStartUpMainActivity extends Activity implements MainRootView.IFi
     @Override
     protected void onResume() {
         super.onResume();
+        AppLog.log("Activity onResume");
         AppStartUpTimeLog.logTimeDiff("Activity onResume start");
 
         BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
@@ -55,10 +58,23 @@ public class AppStartUpMainActivity extends Activity implements MainRootView.IFi
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        AppLog.log("Activity onStop");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppLog.log("Activity onPause");
+    }
+
+    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus && mIsFirstFocus) {
             mIsFirstFocus = false;
+            AppLog.log("Activity onWindowFocusChanged");
             AppStartUpTimeLog.logTimeDiff("Activity onWindowFocusChanged true start");
             mHandler.post(new Runnable() {
                 @Override
@@ -73,6 +89,7 @@ public class AppStartUpMainActivity extends Activity implements MainRootView.IFi
 
     @Override
     public void onFirstDrawFinish() {
+        AppLog.log("Activity onFirstDrawFinish");
         AppStartUpTimeLog.logTimeDiff("Activity onFirstDrawFinish");
         AppStartUpTimeLog.logCurTotalTime("Activity onFirstDrawFinish");
         onLazyInit();
