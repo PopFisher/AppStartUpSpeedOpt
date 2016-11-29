@@ -12,15 +12,41 @@ import android.widget.FrameLayout;
 public class FirstDrawLayoutRoot extends FrameLayout {
 
     private boolean isFirstDrawFinish = false;
+    private boolean isFirstMeasureFinish = false;
+    private boolean isFirstLayoutFinish = false;
 
     private IFirstDrawListener mIFirstDrawListener;
 
     public interface IFirstDrawListener {
         void onFirstDrawFinish();
+        void onFirstMeasureFinish();
+        void onFirstLayoutFinish();
     }
 
     public FirstDrawLayoutRoot(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        if (!isFirstMeasureFinish) {
+            isFirstMeasureFinish = true;
+            if (mIFirstDrawListener != null) {
+                mIFirstDrawListener.onFirstMeasureFinish();
+            }
+        }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (!isFirstLayoutFinish) {
+            isFirstLayoutFinish = true;
+            if (mIFirstDrawListener != null) {
+                mIFirstDrawListener.onFirstLayoutFinish();
+            }
+        }
     }
 
     @Override
