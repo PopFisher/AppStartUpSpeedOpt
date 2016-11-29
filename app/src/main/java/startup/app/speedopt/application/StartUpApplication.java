@@ -29,7 +29,7 @@ public class StartUpApplication extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         AppLog.log("StartUpApplication attachBaseContext");
-        AppStartUpTimeLog.markStartTime("Application attachBaseContext");
+        AppStartUpTimeLog.markStartTime("Application attachBaseContext", true);
         BlockingUtil.simulateBlocking(200); // 模拟阻塞100毫秒
     }
 

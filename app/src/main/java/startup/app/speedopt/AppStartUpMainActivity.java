@@ -3,7 +3,6 @@ package startup.app.speedopt;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.view.ViewTreeObserver;
 
 import startup.app.speedopt.log.AppLog;
@@ -25,7 +24,7 @@ public class AppStartUpMainActivity extends Activity {
         if (AppStartUpTimeLog.isColdStart) {
             AppStartUpTimeLog.isColdStart = false;
         } else {
-            AppStartUpTimeLog.markStartTime("Activity onCreate");
+            AppStartUpTimeLog.markStartTime("Activity onCreate", false);
         }
         AppStartUpTimeLog.logTimeDiff("Activity onCreate start");
 
@@ -39,15 +38,13 @@ public class AppStartUpMainActivity extends Activity {
         BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
 
         AppStartUpTimeLog.logTimeDiff("Activity onCreate end");
-        AppStartUpTimeLog.logCurTotalTime("Activity onCreate end");
     }
 
     private FirstDrawLayoutRoot.IFirstDrawListener mMainFirstDrawListener = new FirstDrawLayoutRoot.IFirstDrawListener() {
         @Override
         public void onFirstDrawFinish() {
             AppLog.log("Activity MainRootView onFirstDrawFinish");
-            AppStartUpTimeLog.logTimeDiff("Activity onFirstDrawFinish");
-            AppStartUpTimeLog.logCurTotalTime("Activity onFirstDrawFinish");
+            AppStartUpTimeLog.logTimeDiff("Activity onFirstDrawFinish", true);
             onLazyInit();
         }
 
@@ -67,24 +64,6 @@ public class AppStartUpMainActivity extends Activity {
             @Override
             public void onGlobalLayout() {
                 AppLog.log("Activity ViewTreeObserver onGlobalLayout");
-            }
-        });
-
-        mMainRootView.getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
-            @Override
-            public void onWindowFocusChanged(boolean b) {
-                AppLog.log("Activity ViewTreeObserver onWindowFocusChanged " + b);
-            }
-        });
-        mMainRootView.getViewTreeObserver().addOnWindowAttachListener(new ViewTreeObserver.OnWindowAttachListener() {
-            @Override
-            public void onWindowAttached() {
-                AppLog.log("Activity ViewTreeObserver onWindowAttached");
-            }
-
-            @Override
-            public void onWindowDetached() {
-                AppLog.log("Activity ViewTreeObserver onWindowAttached");
             }
         });
     }
@@ -175,8 +154,7 @@ public class AppStartUpMainActivity extends Activity {
 
         BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
 
-        AppStartUpTimeLog.logTimeDiff("Activity onResume end");
-        AppStartUpTimeLog.logCurTotalTime("Activity onResume end");
+        AppStartUpTimeLog.logTimeDiff("Activity onResume end", true);
     }
 
     @Override
@@ -203,7 +181,6 @@ public class AppStartUpMainActivity extends Activity {
                 public void run() {
                     BlockingUtil.simulateBlocking(10);  // 模拟阻塞100毫秒
                     AppStartUpTimeLog.logTimeDiff("Activity onWindowFocusChanged true end");
-                    AppStartUpTimeLog.logCurTotalTime("Activity onWindowFocusChanged true end");
                 }
             });
         }

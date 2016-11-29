@@ -2,6 +2,8 @@ package startup.app.speedopt.log;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import startup.app.speedopt.BuildConfig;
 
 /**
@@ -15,8 +17,10 @@ public class AppStartUpTimeLog {
 
     private static long mLastTime = 0;
     private static long mFirstTime = 0;
-    private static String mLastMarkStr = "";
     private static String mFirstMarkStr = "";
+    private static String mColdStartTag = "";
+
+    public static ArrayList<TimeNoteData> mTimeNoteDataArrayList = new ArrayList<TimeNoteData>();
 
     /**
      * 是否是冷启动，true为冷启动，false为热启动
@@ -30,16 +34,20 @@ public class AppStartUpTimeLog {
      *
      * @param markStr
      */
-    public static void markStartTime(String markStr) {
+    public static void markStartTime(String markStr, boolean coldStart) {
         if (!mEnabled) {
             return;
         }
+
+        mColdStartTag = coldStart ? "[[ 冷启动 ]]\n" : "[[ 热启动 ]]\n";
+        mTimeNoteDataArrayList.clear();
         mFirstTime = System.currentTimeMillis();
         mLastTime = mFirstTime;
         mFirstMarkStr = markStr;
-        mLastMarkStr = mFirstMarkStr;
-        Log.d(TAG, isColdStart ? "\n[冷启动] " : "\n[热启动]");
-        Log.d(TAG, "From [" + markStr + "] start the timer");
+
+        TimeNoteData timeNoteData = new TimeNoteData();
+        timeNoteData.tag = mFirstMarkStr;
+        mTimeNoteDataArrayList.add(timeNoteData);
     }
 
     /**
@@ -48,25 +56,42 @@ public class AppStartUpTimeLog {
      * @param markStr
      */
     public static void logTimeDiff(String markStr) {
+        logTimeDiff(markStr, false);
+    }
+
+    /**
+     * 输出与上一次log的时间差
+     *
+     * @param markStr
+     */
+    public static void logTimeDiff(String markStr, boolean isNeedPrintLog) {
         if (!mEnabled) {
             return;
         }
         long time = System.currentTimeMillis();
-        Log.d(TAG, "[" + mLastMarkStr + "] -> " + "[" + markStr + "] time cost: " + (time - mLastTime));
+
+        TimeNoteData timeNoteData = new TimeNoteData();
+        timeNoteData.tag = markStr;
+        timeNoteData.timeDiff = time - mLastTime;
+        timeNoteData.totalTime = time - mFirstTime;
+        mTimeNoteDataArrayList.add(timeNoteData);
+
         mLastTime = time;
-        mLastMarkStr = markStr;
+
+        if (isNeedPrintLog) {
+            printLog();
+        }
     }
 
-    /**
-     * 输出当前位置到开始计时点的总时间差
-     *
-     * @param markStr
-     */
-    public static void logCurTotalTime(String markStr) {
-        if (!mEnabled) {
-            return;
+    private static void printLog() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(mColdStartTag);
+
+        for (TimeNoteData timeNoteData : mTimeNoteDataArrayList) {
+            stringBuilder.append("[" + timeNoteData.tag + "] (" + timeNoteData.timeDiff + "，" + timeNoteData.totalTime + ")");
+            stringBuilder.append(" --> \n");
         }
-        Log.d(TAG, "[" + mFirstMarkStr + "] --> [" + markStr + "] total time cost：" + (System.currentTimeMillis() - mFirstTime));
-        mLastMarkStr = markStr;
+        stringBuilder.append("[[ End ]]");
+        Log.i(TAG, stringBuilder.toString());
     }
 }
