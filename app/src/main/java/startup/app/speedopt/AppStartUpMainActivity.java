@@ -3,6 +3,8 @@ package startup.app.speedopt;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.MessageQueue;
 import android.view.ViewTreeObserver;
 import android.widget.ListView;
 
@@ -48,7 +50,6 @@ public class AppStartUpMainActivity extends Activity {
         @Override
         public void onFirstDrawFinish() {
             AppLog.log("Activity MainRootView onFirstDrawFinish");
-            AppStartUpTimeLog.logTimeDiff("Activity onFirstDrawFinish", true);
             onLazyInit();
         }
 
@@ -146,6 +147,12 @@ public class AppStartUpMainActivity extends Activity {
 
             @Override
             public void onFirstDrawFinish() {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        AppStartUpTimeLog.logTimeDiff("Activity onFirstDrawFinish", true);
+                    }
+                });
                 AppLog.log("Activity FirstDrawLayoutRootTwo Child onFirstDrawFinish");
             }
         });
@@ -156,6 +163,14 @@ public class AppStartUpMainActivity extends Activity {
         super.onResume();
         AppLog.log("Activity onResume");
         AppStartUpTimeLog.logTimeDiff("Activity onResume start");
+
+        Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
+            @Override
+            public boolean queueIdle() {
+                AppLog.log("queueIdle");
+                return false;
+            }
+        });
 
         BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
 
@@ -180,18 +195,24 @@ public class AppStartUpMainActivity extends Activity {
         AppLog.log("Activity onWindowFocusChanged " + hasFocus);
         if (hasFocus && mIsFirstFocus) {
             mIsFirstFocus = false;
-            AppStartUpTimeLog.logTimeDiff("Activity onWindowFocusChanged true start");
+            AppStartUpTimeLog.logTimeDiff("onWindowFocusChanged true start");
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
-                    AppStartUpTimeLog.logTimeDiff("Activity onWindowFocusChanged true end");
+                    AppStartUpTimeLog.logTimeDiff("onWindowFocusChanged true end");
                 }
             });
         }
     }
 
     private void onLazyInit() {
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mTimeLogListView.setAdapter(new TimeLogAdapter(getBaseContext(), AppStartUpTimeLog.mTimeNoteDataArrayList));
+            }
+        }, 300);
 
     }
 }

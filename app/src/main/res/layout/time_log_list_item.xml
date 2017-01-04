@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="2dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="250dp"
+        android:background="@color/colorAccent" />
+
+    <ImageView
+        android:id="@+id/note"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_alignLeft="@id/line"
+        android:layout_below="@id/line"
+        android:layout_marginLeft="-5dp"
+        android:background="@drawable/time_log_note_bg" />
+
+    <TextView
+        android:id="@+id/note_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/note"
+        android:layout_marginBottom="-4dp"
+        android:layout_toLeftOf="@id/note"
+        android:gravity="right"
+        android:includeFontPadding="false"
+        android:paddingRight="10dp"
+        android:text="Key"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/note_total_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/note"
+        android:layout_marginBottom="-4dp"
+        android:layout_toRightOf="@id/note"
+        android:includeFontPadding="false"
+        android:paddingLeft="5dp"
+        android:text="time"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/note_diff_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/line"
+        android:paddingBottom="12dp"
+        android:paddingLeft="5dp"
+        android:text="time" />
+
+</RelativeLayout>
