@@ -41,4 +41,8 @@
             android:background="@color/colorPrimary" />
     </startup.app.speedopt.FirstDrawLayoutRoot>
 
+    <ListView
+        android:id="@+id/time_log_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </startup.app.speedopt.MainRootView>

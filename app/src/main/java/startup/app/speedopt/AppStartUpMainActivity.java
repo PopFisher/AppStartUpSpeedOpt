@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.ViewTreeObserver;
+import android.widget.ListView;
 
 import startup.app.speedopt.log.AppLog;
 import startup.app.speedopt.log.AppStartUpTimeLog;
@@ -14,25 +15,28 @@ public class AppStartUpMainActivity extends Activity {
     /** 是否是第一次获取焦点 */
     private boolean mIsFirstFocus = true;
     private MainRootView mMainRootView;
+    private ListView mTimeLogListView;
 
     private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         AppLog.log("Activity onCreate");
         if (AppStartUpTimeLog.isColdStart) {
             AppStartUpTimeLog.isColdStart = false;
         } else {
             AppStartUpTimeLog.markStartTime("Activity onCreate", false);
         }
+
+        super.onCreate(savedInstanceState);
+
         AppStartUpTimeLog.logTimeDiff("Activity onCreate start");
 
         BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
 
-        AppStartUpTimeLog.logTimeDiff("Activity setContent start");
+        AppStartUpTimeLog.logTimeDiff("Activity setContentView start");
         setContentView(R.layout.activity_app_start_up_main);
-        AppStartUpTimeLog.logTimeDiff("Activity setContent end");
+        AppStartUpTimeLog.logTimeDiff("Activity setContentView end");
 
         initView();
         BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
@@ -69,6 +73,7 @@ public class AppStartUpMainActivity extends Activity {
     }
 
     private void initView() {
+        mTimeLogListView = (ListView) findViewById(R.id.time_log_listview);
         mMainRootView = (MainRootView) findViewById(R.id.activity_app_start_up_main);
         mMainRootView.setFirstDrawListener(mMainFirstDrawListener);
         initViewTreeListener();
@@ -179,7 +184,7 @@ public class AppStartUpMainActivity extends Activity {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    BlockingUtil.simulateBlocking(10);  // 模拟阻塞100毫秒
+                    BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
                     AppStartUpTimeLog.logTimeDiff("Activity onWindowFocusChanged true end");
                 }
             });
