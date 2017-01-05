@@ -69,6 +69,7 @@ public class TimeLogAdapter extends BaseAdapter {
         viewHolder.noteName.setText(timeNoteData.tag);
         viewHolder.noteTotalTime.setText(timeNoteData.totalTime + " ms");
         viewHolder.noteDiffTime.setText("(" + timeNoteData.timeDiff + ")");
+        viewHolder.noteTotalTime.setTextColor(0xaaff0000);
         return convertView;
     }
 

@@ -6,8 +6,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.MessageQueue;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.ListView;
 
+import startup.app.speedopt.interfaces.IFirstDrawListener;
 import startup.app.speedopt.log.AppLog;
 import startup.app.speedopt.log.AppStartUpTimeLog;
 import startup.app.speedopt.utils.BlockingUtil;
@@ -31,26 +33,26 @@ public class AppStartUpMainActivity extends Activity {
         }
 
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         AppStartUpTimeLog.logTimeDiff("Activity onCreate start");
 
-        BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
+        BlockingUtil.simulateBlocking(300);  // 模拟阻塞100毫秒
 
         AppStartUpTimeLog.logTimeDiff("Activity setContentView start");
         setContentView(R.layout.activity_app_start_up_main);
         AppStartUpTimeLog.logTimeDiff("Activity setContentView end");
 
         initView();
-        BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
+        BlockingUtil.simulateBlocking(200);  // 模拟阻塞100毫秒
 
         AppStartUpTimeLog.logTimeDiff("Activity onCreate end");
     }
 
-    private FirstDrawLayoutRoot.IFirstDrawListener mMainFirstDrawListener = new FirstDrawLayoutRoot.IFirstDrawListener() {
+    private IFirstDrawListener mMainFirstDrawListener = new IFirstDrawListener() {
         @Override
         public void onFirstDrawFinish() {
             AppLog.log("Activity MainRootView onFirstDrawFinish");
-            onLazyInit();
         }
 
         @Override
@@ -79,7 +81,7 @@ public class AppStartUpMainActivity extends Activity {
         mMainRootView.setFirstDrawListener(mMainFirstDrawListener);
         initViewTreeListener();
         FirstDrawLayoutRoot firstDrawLayoutRootOne = (FirstDrawLayoutRoot) findViewById(R.id.root_layout_one);
-        firstDrawLayoutRootOne.setFirstDrawListener(new FirstDrawLayoutRoot.IFirstDrawListener() {
+        firstDrawLayoutRootOne.setFirstDrawListener(new IFirstDrawListener() {
 
             @Override
             public void onFirstMeasureFinish() {
@@ -96,8 +98,8 @@ public class AppStartUpMainActivity extends Activity {
                 AppLog.log("Activity FirstDrawLayoutRootOne onFirstDrawFinish");
             }
         });
-        FirstDrawLayoutRoot firstDrawLayoutRootOneChild = (FirstDrawLayoutRoot) findViewById(R.id.root_layout_one_child);
-        firstDrawLayoutRootOneChild.setFirstDrawListener(new FirstDrawLayoutRoot.IFirstDrawListener() {
+        FirstDrawListenView firstDrawLayoutRootOneChild = (FirstDrawListenView) findViewById(R.id.root_layout_one_child);
+        firstDrawLayoutRootOneChild.setFirstDrawListener(new IFirstDrawListener() {
 
             @Override
             public void onFirstMeasureFinish() {
@@ -115,7 +117,7 @@ public class AppStartUpMainActivity extends Activity {
             }
         });
         FirstDrawLayoutRoot firstDrawLayoutRootTwo = (FirstDrawLayoutRoot) findViewById(R.id.root_layout_two);
-        firstDrawLayoutRootTwo.setFirstDrawListener(new FirstDrawLayoutRoot.IFirstDrawListener() {
+        firstDrawLayoutRootTwo.setFirstDrawListener(new IFirstDrawListener() {
 
             @Override
             public void onFirstMeasureFinish() {
@@ -132,8 +134,8 @@ public class AppStartUpMainActivity extends Activity {
                 AppLog.log("Activity FirstDrawLayoutRootTwo onFirstDrawFinish");
             }
         });
-        FirstDrawLayoutRoot firstDrawLayoutRootTwoChild = (FirstDrawLayoutRoot) findViewById(R.id.root_layout_two_child);
-        firstDrawLayoutRootTwoChild.setFirstDrawListener(new FirstDrawLayoutRoot.IFirstDrawListener() {
+        FirstDrawListenView firstDrawLayoutRootTwoChild = (FirstDrawListenView) findViewById(R.id.root_layout_two_child);
+        firstDrawLayoutRootTwoChild.setFirstDrawListener(new IFirstDrawListener() {
 
             @Override
             public void onFirstMeasureFinish() {
@@ -147,13 +149,16 @@ public class AppStartUpMainActivity extends Activity {
 
             @Override
             public void onFirstDrawFinish() {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppStartUpTimeLog.logTimeDiff("Activity onFirstDrawFinish", true);
-                    }
-                });
+//                mHandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        AppStartUpTimeLog.logTimeDiff("Activity onFirstDrawFinish", true);
+//                        onLazyInit();
+//                    }
+//                });
                 AppLog.log("Activity FirstDrawLayoutRootTwo Child onFirstDrawFinish");
+                AppStartUpTimeLog.logTimeDiff("Activity onFirstDrawFinish", true);
+                onLazyInit();
             }
         });
     }
@@ -164,9 +169,11 @@ public class AppStartUpMainActivity extends Activity {
         AppLog.log("Activity onResume");
         AppStartUpTimeLog.logTimeDiff("Activity onResume start");
 
+        // 这个方式统计时间有点晚了，已经看到界面了到时候，主进程也不一定是空闲的
         Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
             @Override
             public boolean queueIdle() {
+                // 主进程空闲时调用，也可以用第一次回调统计主界面加载到显示的时间，但是延迟加载的话可能会影响这个结果
                 AppLog.log("queueIdle");
                 return false;
             }
@@ -195,24 +202,18 @@ public class AppStartUpMainActivity extends Activity {
         AppLog.log("Activity onWindowFocusChanged " + hasFocus);
         if (hasFocus && mIsFirstFocus) {
             mIsFirstFocus = false;
-            AppStartUpTimeLog.logTimeDiff("onWindowFocusChanged true start");
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
-                    AppStartUpTimeLog.logTimeDiff("onWindowFocusChanged true end");
-                }
-            });
+            AppStartUpTimeLog.logTimeDiff("FocusChanged true start");
+            BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
+            AppStartUpTimeLog.logTimeDiff("FocusChanged true end");
         }
     }
 
     private void onLazyInit() {
-        mHandler.postDelayed(new Runnable() {
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
                 mTimeLogListView.setAdapter(new TimeLogAdapter(getBaseContext(), AppStartUpTimeLog.mTimeNoteDataArrayList));
             }
-        }, 300);
-
+        });
     }
 }

@@ -21,16 +21,18 @@ public class StartUpApplication extends Application {
         super.onCreate();
         AppStartUpTimeLog.isColdStart = true;   // 设置为冷启动标志
         AppLog.log("StartUpApplication onCreate");
-        AppStartUpTimeLog.logTimeDiff("Application onCreate");
+        AppStartUpTimeLog.logTimeDiff("App onCreate start");
         BlockingUtil.simulateBlocking(500); // 模拟阻塞100毫秒
+        AppStartUpTimeLog.logTimeDiff("App onCreate end");
     }
 
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         AppLog.log("StartUpApplication attachBaseContext");
-        AppStartUpTimeLog.markStartTime("Application attachBaseContext", true);
+        AppStartUpTimeLog.markStartTime("App attachBaseContext", true);
         BlockingUtil.simulateBlocking(200); // 模拟阻塞100毫秒
+        AppStartUpTimeLog.logTimeDiff("App attachBaseContext end", true);
     }
 
     @Override

@@ -3,7 +3,7 @@ package startup.app.speedopt;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
+import android.view.View;
 
 import startup.app.speedopt.interfaces.IFirstDrawListener;
 
@@ -11,7 +11,7 @@ import startup.app.speedopt.interfaces.IFirstDrawListener;
  * Created by popfisher on 2016/11/24.
  */
 
-public class FirstDrawLayoutRoot extends FrameLayout {
+public class FirstDrawListenView extends View {
 
     private boolean isFirstDrawFinish = false;
     private boolean isFirstMeasureFinish = false;
@@ -19,7 +19,7 @@ public class FirstDrawLayoutRoot extends FrameLayout {
 
     private IFirstDrawListener mIFirstDrawListener;
 
-    public FirstDrawLayoutRoot(Context context, AttributeSet attrs) {
+    public FirstDrawListenView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

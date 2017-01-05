@@ -17,7 +17,7 @@
         android:layout_height="10dp"
         android:layout_alignLeft="@id/line"
         android:layout_below="@id/line"
-        android:layout_marginLeft="-5dp"
+        android:layout_marginLeft="-4dp"
         android:background="@drawable/time_log_note_bg" />
 
     <TextView

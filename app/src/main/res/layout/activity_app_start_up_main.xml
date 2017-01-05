@@ -4,22 +4,27 @@
     android:id="@+id/activity_app_start_up_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     android:paddingBottom="30dp"
     android:paddingTop="2dp"
     tools:context="startup.app.speedopt.AppStartUpMainActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/ic_launcher" />
 
     <startup.app.speedopt.FirstDrawLayoutRoot
         android:id="@+id/root_layout_one"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorAccent">
+        android:background="@android:color/transparent">
 
-        <startup.app.speedopt.FirstDrawLayoutRoot
+        <startup.app.speedopt.FirstDrawListenView
             android:id="@+id/root_layout_one_child"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_gravity="center_vertical"
-            android:background="@color/colorAccent" />
+            android:layout_gravity="center_vertical" />
 
     </startup.app.speedopt.FirstDrawLayoutRoot>
 
@@ -35,13 +40,13 @@
         android:id="@+id/root_layout_two"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorAccent">
+        android:background="@android:color/transparent">
 
-        <startup.app.speedopt.FirstDrawLayoutRoot
+        <startup.app.speedopt.FirstDrawListenView
             android:id="@+id/root_layout_two_child"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_gravity="center_vertical"
-            android:background="@color/colorAccent" />
+            android:layout_gravity="center_vertical"/>
     </startup.app.speedopt.FirstDrawLayoutRoot>
+
 </startup.app.speedopt.MainRootView>

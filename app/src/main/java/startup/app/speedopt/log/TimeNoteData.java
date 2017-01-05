@@ -11,4 +11,6 @@ public class TimeNoteData {
     public long timeDiff = 0;
     /** 与开始节点的总时间差 */
     public long totalTime = 0;
+    /** 标记这个节点到上个节点是不是系统耗时 */
+    public boolean isSystemCost = false;
 }
