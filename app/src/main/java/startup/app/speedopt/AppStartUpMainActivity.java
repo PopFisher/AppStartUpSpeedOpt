@@ -1,10 +1,12 @@
 package startup.app.speedopt;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.MessageQueue;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.ListView;
@@ -31,11 +33,10 @@ public class AppStartUpMainActivity extends Activity {
         } else {
             AppStartUpTimeLog.markStartTime("Activity onCreate", false);
         }
-
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        AppStartUpTimeLog.logTimeDiff("Activity onCreate start");
+        AppStartUpTimeLog.logTimeDiff("Activity onCreate start", false, true);
 
         BlockingUtil.simulateBlocking(300);  // 模拟阻塞100毫秒
 
@@ -157,17 +158,20 @@ public class AppStartUpMainActivity extends Activity {
 //                    }
 //                });
                 AppLog.log("Activity FirstDrawLayoutRootTwo Child onFirstDrawFinish");
-                AppStartUpTimeLog.logTimeDiff("Activity onFirstDrawFinish", true);
+                AppStartUpTimeLog.logTimeDiff("onFirstDrawFinish start", false, true);
                 onLazyInit();
+                BlockingUtil.simulateBlocking(200);
+                AppStartUpTimeLog.logTimeDiff("onFirstDrawFinish end", true, false);
             }
         });
     }
 
     @Override
     protected void onResume() {
-        super.onResume();
         AppLog.log("Activity onResume");
-        AppStartUpTimeLog.logTimeDiff("Activity onResume start");
+        AppStartUpTimeLog.logTimeDiff("Activity onResume start", false, true);
+
+        super.onResume();
 
         // 这个方式统计时间有点晚了，已经看到界面了到时候，主进程也不一定是空闲的
         Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
@@ -197,12 +201,12 @@ public class AppStartUpMainActivity extends Activity {
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
+    public void  onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         AppLog.log("Activity onWindowFocusChanged " + hasFocus);
         if (hasFocus && mIsFirstFocus) {
             mIsFirstFocus = false;
-            AppStartUpTimeLog.logTimeDiff("FocusChanged true start");
+            AppStartUpTimeLog.logTimeDiff("FocusChanged true start", false, true);
             BlockingUtil.simulateBlocking(100);  // 模拟阻塞100毫秒
             AppStartUpTimeLog.logTimeDiff("FocusChanged true end");
         }

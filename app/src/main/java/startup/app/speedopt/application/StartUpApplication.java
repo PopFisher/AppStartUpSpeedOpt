@@ -21,7 +21,7 @@ public class StartUpApplication extends Application {
         super.onCreate();
         AppStartUpTimeLog.isColdStart = true;   // 设置为冷启动标志
         AppLog.log("StartUpApplication onCreate");
-        AppStartUpTimeLog.logTimeDiff("App onCreate start");
+        AppStartUpTimeLog.logTimeDiff("App onCreate start", false, true);
         BlockingUtil.simulateBlocking(500); // 模拟阻塞100毫秒
         AppStartUpTimeLog.logTimeDiff("App onCreate end");
     }

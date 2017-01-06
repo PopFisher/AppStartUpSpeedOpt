@@ -68,8 +68,12 @@ public class TimeLogAdapter extends BaseAdapter {
         params.leftMargin = mMarginLeft;
         viewHolder.noteName.setText(timeNoteData.tag);
         viewHolder.noteTotalTime.setText(timeNoteData.totalTime + " ms");
-        viewHolder.noteDiffTime.setText("(" + timeNoteData.timeDiff + ")");
         viewHolder.noteTotalTime.setTextColor(0xaaff0000);
+        if (timeNoteData.isSystemCost) {
+            viewHolder.noteDiffTime.setText("(" + timeNoteData.timeDiff + ") 系统耗时");
+        } else {
+            viewHolder.noteDiffTime.setText("(" + timeNoteData.timeDiff + ")");
+        }
         return convertView;
     }
 

@@ -65,6 +65,15 @@ public class AppStartUpTimeLog {
      * @param markStr
      */
     public static void logTimeDiff(String markStr, boolean isNeedPrintLog) {
+        logTimeDiff(markStr, isNeedPrintLog, false);
+    }
+
+    /**
+     * 输出与上一次log的时间差
+     *
+     * @param markStr
+     */
+    public static void logTimeDiff(String markStr, boolean isNeedPrintLog, boolean isSysCost) {
         if (!mEnabled) {
             return;
         }
@@ -74,6 +83,7 @@ public class AppStartUpTimeLog {
         timeNoteData.tag = markStr;
         timeNoteData.timeDiff = time - mLastTime;
         timeNoteData.totalTime = time - mFirstTime;
+        timeNoteData.isSystemCost = isSysCost;
         mTimeNoteDataArrayList.add(timeNoteData);
 
         mLastTime = time;
