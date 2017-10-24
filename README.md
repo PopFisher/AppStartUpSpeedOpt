@@ -19,6 +19,12 @@
 
 ![](/docpic/start_up.png "启动流程")
 
+**具体的代码流程，分析关键的函数耗时**
+
+![](/docpic/cost_time.jpg "启动流程")
+
+&emsp;&emsp;图中onFirstDrawFinish和onWindowFocusChanged的前后顺序可能会颠倒，但是时间差不大。
+
 ### 制定优化方向
 &emsp;&emsp;从上面的分析可以看出，App启动过程中我们优化的地方包括主进程启动流程和主界面启动流程，主进程启动就是Application的创建过程，主界面启动就是MainActivity的创建过程。只需要分别对这两个部分进行优化即可。
 

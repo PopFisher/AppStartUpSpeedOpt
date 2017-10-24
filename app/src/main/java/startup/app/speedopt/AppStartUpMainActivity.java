@@ -201,7 +201,7 @@ public class AppStartUpMainActivity extends Activity {
     }
 
     @Override
-    public void  onWindowFocusChanged(boolean hasFocus) {
+    public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         AppLog.log("Activity onWindowFocusChanged " + hasFocus);
         if (hasFocus && mIsFirstFocus) {
