@@ -57,10 +57,8 @@ public class TimeLogAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         if (position == 0) {
-            viewHolder.line.setVisibility(View.INVISIBLE);
             viewHolder.noteDiffTime.setVisibility(View.INVISIBLE);
         } else {
-            viewHolder.line.setVisibility(View.VISIBLE);
             viewHolder.noteDiffTime.setVisibility(View.VISIBLE);
         }
         TimeNoteData timeNoteData = mTimeNoteDatas.get(position);
@@ -70,9 +68,9 @@ public class TimeLogAdapter extends BaseAdapter {
         viewHolder.noteTotalTime.setText(timeNoteData.totalTime + " ms");
         viewHolder.noteTotalTime.setTextColor(0xaaff0000);
         if (timeNoteData.isSystemCost) {
-            viewHolder.noteDiffTime.setText("(" + timeNoteData.timeDiff + ") 系统耗时");
+            viewHolder.noteDiffTime.setText("(" + timeNoteData.timeDiff + " ms) 系统耗时");
         } else {
-            viewHolder.noteDiffTime.setText("(" + timeNoteData.timeDiff + ")");
+            viewHolder.noteDiffTime.setText("(" + timeNoteData.timeDiff + " ms)");
         }
         return convertView;
     }

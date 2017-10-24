@@ -24,6 +24,21 @@ public class FirstDrawListenView extends View {
     }
 
     @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (!isFirstDrawFinish) {
+            isFirstDrawFinish = true;
+            if (mIFirstDrawListener != null) {
+                mIFirstDrawListener.onFirstDrawFinish();
+            }
+        }
+    }
+
+    public void setFirstDrawListener(IFirstDrawListener firstDrawListener) {
+        mIFirstDrawListener = firstDrawListener;
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if (!isFirstMeasureFinish) {
@@ -45,19 +60,5 @@ public class FirstDrawListenView extends View {
         }
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        if (!isFirstDrawFinish) {
-            isFirstDrawFinish = true;
-            if (mIFirstDrawListener != null) {
-                mIFirstDrawListener.onFirstDrawFinish();
-            }
-        }
-    }
-
-    public void setFirstDrawListener(IFirstDrawListener firstDrawListener) {
-        mIFirstDrawListener = firstDrawListener;
-    }
 }
 

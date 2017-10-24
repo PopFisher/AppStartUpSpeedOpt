@@ -19,6 +19,17 @@ public class StartUpApplication extends Application {
     public void onCreate() {
         // 程序创建时调用，次方法应该执行应该尽量快，否则会拖慢整个app的启动速度
         super.onCreate();
+        onSyncLoadForCreate();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        onSyncLoad();
+        onAsyncLoad();
+    }
+
+    private void onSyncLoadForCreate() {
         AppStartUpTimeLog.isColdStart = true;   // 设置为冷启动标志
         AppLog.log("StartUpApplication onCreate");
         AppStartUpTimeLog.logTimeDiff("App onCreate start", false, true);
@@ -26,13 +37,20 @@ public class StartUpApplication extends Application {
         AppStartUpTimeLog.logTimeDiff("App onCreate end");
     }
 
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
+    private void onSyncLoad() {
         AppLog.log("StartUpApplication attachBaseContext");
         AppStartUpTimeLog.markStartTime("App attachBaseContext", true);
         BlockingUtil.simulateBlocking(200); // 模拟阻塞100毫秒
         AppStartUpTimeLog.logTimeDiff("App attachBaseContext end", true);
+    }
+
+    public void onAsyncLoad() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // 异步加载逻辑
+            }
+        }, "ApplicationAsyncLoad").start();
     }
 
     @Override

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="40dp"
     android:orientation="vertical">
 
     <View
@@ -17,42 +17,43 @@
         android:layout_height="10dp"
         android:layout_alignLeft="@id/line"
         android:layout_below="@id/line"
-        android:layout_marginLeft="-4dp"
+        android:layout_marginTop="-14dp"
+        android:layout_marginLeft="-4.5dp"
         android:background="@drawable/time_log_note_bg" />
 
     <TextView
         android:id="@+id/note_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/note"
-        android:layout_marginBottom="-4dp"
+        android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@id/note"
-        android:gravity="right"
+        android:gravity="right|bottom"
         android:includeFontPadding="false"
         android:paddingRight="10dp"
         android:text="Key"
-        android:textSize="18dp" />
+        android:textSize="16dp" />
 
     <TextView
         android:id="@+id/note_total_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/note"
-        android:layout_marginBottom="-4dp"
+        android:layout_alignParentBottom="true"
         android:layout_toRightOf="@id/note"
         android:includeFontPadding="false"
         android:paddingLeft="5dp"
         android:text="time"
-        android:textSize="18dp" />
+        android:gravity="bottom"
+        android:textSize="16dp" />
 
     <TextView
         android:id="@+id/note_diff_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_toRightOf="@id/line"
-        android:paddingBottom="12dp"
+        android:includeFontPadding="false"
+        android:layout_marginTop="2dp"
         android:paddingLeft="5dp"
+        android:textSize="13dp"
         android:text="time" />
 
 </RelativeLayout>

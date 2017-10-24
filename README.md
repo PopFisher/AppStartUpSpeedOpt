@@ -17,11 +17,44 @@
 ### 分析启动性能瓶颈
 &emsp;&emsp;在具体的优化之前，首先我们得找到需要优化的地方，怎么找？这就要求了解Android App的启动原理，我们要知道一个App从点击桌面图标到我们看到App的主界面整个过程中经过了哪些步骤，哪些地方是我们可以优化的地方。下图是App启动过程的一个大概描述。
 
+![](/docpic/start_up.png "启动流程")
+
 ### 制定优化方向
 &emsp;&emsp;从上面的分析可以看出，App启动过程中我们优化的地方包括主进程启动流程和主界面启动流程，主进程启动就是Application的创建过程，主界面启动就是MainActivity的创建过程。只需要分别对这两个部分进行优化即可。
 
 1. Application中attachBaseContext最早被调用，随后是onCreate方法，尽量在这两个方法中不要有耗时操作。
 1. MainActivity中重点关注onCreate，onResume，onWindowFocusChange，Activity启动完成结束标志这里采用没有使用生命周期函数，而是以主界面View的第一次绘制作为启动完成的标志，View被第一次绘制证明View即将展示出来被我们看到。所以我们在Activity根布局中加入一个自定义View，以它的onDraw方法第一次回调作为Activity启动完成的标志。
+
+		public class FirstDrawListenView extends View {
+		    private boolean isFirstDrawFinish = false;
+		
+		    private IFirstDrawListener mIFirstDrawListener;
+		
+		    public FirstDrawListenView(Context context, AttributeSet attrs) {
+		        super(context, attrs);
+		    }
+		
+		    @Override
+		    protected void onDraw(Canvas canvas) {
+		        super.onDraw(canvas);
+		        if (!isFirstDrawFinish) {
+		            isFirstDrawFinish = true;
+		            if (mIFirstDrawListener != null) {
+		                mIFirstDrawListener.onFirstDrawFinish();
+		            }
+		        }
+		    }
+		
+		    public void setFirstDrawListener(IFirstDrawListener firstDrawListener) {
+		        mIFirstDrawListener = firstDrawListener;
+		    }
+		
+			public interface IFirstDrawListener {
+			    void onFirstDrawFinish();
+			}
+		}
+
+
 
 ## 怎么统计数据查看优化前后的数据对比
 &emsp;&emsp;通过上面的分析，我们可以统计进程启动各个阶段的耗时点，以及Activity启动各个阶段的耗时点（这个步骤需要额外在主布局中加入一个自定义的空View，监听它的onDraw方法的第一次回调），可以通过埋点数据收集这些数据，在优化之前可以先加入埋点数据，统计上报各个时间段的埋点，所以需要先发个版本验证一下优化之前的情况。统计数据的机制加入之后，就可以着手优化了，一边优化一边对比，可以很清楚看到优化前后的对比。
@@ -42,6 +75,47 @@
 
 ### 异步加载一：Application中加入异步线程
 &emsp;&emsp;在Application中封装两个方法：onSyncLoad（同步加载）和 onAsyncLoad（异步加载，在Thread中执行），把不需要同步加载的部分全部放到onAsyncLoad方法，需要同步的方法放到onSyncLoad中去做，就这种简单的分类就可以带来一个很好的优化效果。
+
+	public class StartUpApplication extends Application {
+	
+	    @Override
+	    public void onCreate() {
+	        // 程序创建时调用，次方法应该执行应该尽量快，否则会拖慢整个app的启动速度
+	        super.onCreate();
+	        onSyncLoadForCreate();
+	    }
+	
+	    @Override
+	    protected void attachBaseContext(Context base) {
+	        super.attachBaseContext(base);
+	        onSyncLoad();
+	        onAsyncLoad();
+	    }
+	
+	    private void onSyncLoadForCreate() {
+	        AppStartUpTimeLog.isColdStart = true;   // 设置为冷启动标志
+	        AppLog.log("StartUpApplication onCreate");
+	        AppStartUpTimeLog.logTimeDiff("App onCreate start", false, true);
+	        BlockingUtil.simulateBlocking(500); // 模拟阻塞100毫秒
+	        AppStartUpTimeLog.logTimeDiff("App onCreate end");
+	    }
+	
+	    private void onSyncLoad() {
+	        AppLog.log("StartUpApplication attachBaseContext");
+	        AppStartUpTimeLog.markStartTime("App attachBaseContext", true);
+	        BlockingUtil.simulateBlocking(200); // 模拟阻塞100毫秒
+	        AppStartUpTimeLog.logTimeDiff("App attachBaseContext end", true);
+	    }
+	
+	    public void onAsyncLoad() {
+	        new Thread(new Runnable() {
+	            @Override
+	            public void run() {
+	                // 异步加载逻辑
+	            }
+	        }, "ApplicationAsyncLoad").start();
+	    }
+	}
 
 ### 异步加载二：MainActivity中加入异步线程
 &emsp;&emsp;这一步骤与Application的优化思路一样，也是封装onSyncLoad和onAsyncLoad方法对现有代码进行一个分类，但是这两个方法的调用时机要晚一点，是在主界面首屏绘制完成的时候调用。这个步骤也需要new一个Thead，属于额外的开销，不过这不影响我们整体性能。
